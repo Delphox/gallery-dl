@@ -164,7 +164,12 @@ class PathFormat():
                 os.lstat(self.realpath)  # raises OSError if file doesn't exist
                 return self.check_file()
             except OSError:
-                pass
+                try:
+                    os.lstat((self.realpath).rsplit(".", 1)[0] + '.avif')
+                    #  check if avif file doesn't exist
+                    return self.check_file()
+                except OSError:
+                    pass
         return False
 
     def check_file(self):
