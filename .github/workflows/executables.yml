@@ -97,11 +97,8 @@ jobs:
 
     - uses: ncipollo/release-action@v1
       with:
-        owner: gdl-org
-        repo: builds
         tag: ${{ env.DATE }}
         bodyFile: body.md
         artifacts: "executable-*/*"
         allowUpdates: true
         makeLatest: true
-        token: ${{ secrets.REPO_TOKEN }}
