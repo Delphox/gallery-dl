@@ -13,6 +13,7 @@
 * [Downloader Options](#downloader-options)
 * [Sleep Options](#sleep-options)
 * [Configuration Options](#configuration-options)
+* [Cache Options](#cache-options)
 * [Authentication Options](#authentication-options)
 * [Cookie Options](#cookie-options)
 * [Selection Options](#selection-options)
@@ -26,12 +27,11 @@
     -d, --destination PATH      Target location for file downloads
     -D, --directory PATH        Exact location for file downloads
     --restrict-filenames VALUE  Replace restricted filename characters with
-                                underscores. One of 'windows', 'unix', 'ascii',
-                                'ascii+', or a custom set of characters
+                                underscores. One of 'windows', 'windows+',
+                                'unix', 'ascii', 'ascii+', or a custom set of
+                                characters
     --windows-filenames         Force filenames to be Windows-compatible
     -X, --extractors PATH       Load external extractors from PATH
-    --clear-cache MODULE        Delete cached login sessions, cookies, etc. for
-                                MODULE (ALL to delete everything)
     --compat                    Restore legacy 'category' names
 
 ## Update Options:
@@ -150,6 +150,18 @@
     --config-status             Show configuration file status
     --config-open               Open configuration file in external application
 
+## Cache Options:
+    --cache-file PATH           Use PATH as cache file
+    --cache-show MODULE         Show cached values for MODULE (ALL to show all
+                                entries, EXP to show only expired entries, VAL
+                                to show only valid entries)
+    --cache-clear MODULE        Delete cached login sessions, cookies, etc. for
+                                MODULE (ALL to delete everything, EXP to delete
+                                only expired values)
+    --cache-vacuum              Clean up the cache database by removing unused
+                                space and reorganizing the data to improve
+                                performance
+
 ## Authentication Options:
     -u, --username USER         Username to login with
     -p, --password PASS         Password belonging to the given username
@@ -180,6 +192,28 @@
                                 500k or 2.5M)
     --download-archive FILE     Record successfully downloaded files in FILE
                                 and skip downloading any file already in it
+    --date-before DATE          Process only posts created before this date
+                                given in ISO 8601 format or as Unix timestamp
+                                (e.g. '2025-10-31', '2026-01-09T15:30:00',
+                                '1767972600')
+    --date-after DATE           Process only posts created after this date.
+                                Stop extraction when an older post is
+                                encountered
+    --blacklist CATEGORIES      Ignore the given comma-separated category names
+                                or category:subcategory pairs when spawning
+                                child extractors for external URLs (e.g.
+                                'pixiv', 'pixiv:user,*:artist')
+    --whitelist CATEGORIES      Allow only the given comma-separated category
+                                names or category:subcategory pairs to allow
+                                when spawning child extractors for external
+                                URLs
+    --tags-blacklist TAGS       Ignore posts tagged with any of the tags given
+                                as comma-separated list or path to a file
+                                containing them (e.g. '1girl',
+                                'shirt,highres,smile', 'C:\path\to\list.txt')
+    --tags-whitelist TAGS       Allow only posts tagged with at least one of
+                                the tags given as comma-separated list or path
+                                to a file containing them
     --range RANGE               Index range(s) specifying which files to
                                 download. These can be either a constant value,
                                 range, or slice (e.g. '5', '8-20', or '1:24:3')

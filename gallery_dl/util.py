@@ -372,7 +372,9 @@ def expand_path(path):
     if not path:
         return path
     if not isinstance(path, str):
-        path = os.path.join(*path)
+        import logging
+        logging.getLogger("gallery-dl").error(
+            "Non-string paths are no longer supported.")
     return os.path.expandvars(os.path.expanduser(path))
 
 
@@ -678,6 +680,9 @@ class Flags():
     def process(self, flag):
         value = self.__dict__[flag]
         if value is False:  # flag was set to "skip"
+            if flag == "DOWNLOAD":
+                self.DOWNLOAD = None
+                raise exception.StopDownload()
             return "skip"
         self.__dict__[flag] = None
 
@@ -1027,6 +1032,69 @@ def predicate_filter(expr, target="image"):
         except Exception as exc:
             raise exception.FilterError(exc)
     expr = compile_filter(expr, f"<{target} filter>")
+    return _pred
+
+
+def predicate_tags(blacklist, negate=False):
+    def _pred(_, kwdict):
+        if not (tags := kwdict.get("tags") or kwdict.get("tag_string")):
+            return True
+
+        if isinstance(tags, str):
+            taglist = tags.split(", ")
+            if len(taglist) < len(tags) / 16:
+                taglist = tags.split(" ")
+            tags = taglist
+        elif isinstance(tags[0], dict):
+            # pixiv "tags": "original"
+            tags = [
+                tag
+                for tagdict in tags
+                for tag in tagdict.values()
+                if isinstance(tag, str)
+            ]
+            tags.sort()
+
+        for tag in tags:
+            if tag in blacklist:
+                return negate
+        return not negate
+
+    if isinstance(blacklist, str):
+        try:
+            with open(expand_path(blacklist)) as fp:
+                blacklist = {t.lower() for tag in fp if (t := tag.strip())}
+        except OSError:
+            blacklist = {tag for tag in
+                         blacklist.replace(" ", "").lower().split(",")}
+    else:
+        blacklist = set(blacklist)
+    return _pred
+
+
+def predicate_date(before, after=None, skip=None):
+    if after is None:
+        if skip is not None and skip(before):
+            return true
+
+        def _pred(_, kwdict):
+            if (date := kwdict.get("date")) and date >= before:
+                return False
+            return True
+
+    elif before is None or after > before or skip is not None and skip(before):
+        def _pred(_, kwdict):
+            if (date := kwdict.get("date")) and date <= after:
+                raise exception.StopExtraction()
+            return True
+
+    else:
+        def _pred(_, kwdict):
+            if not (date := kwdict.get("date")):
+                return True
+            if date <= after:
+                raise exception.StopExtraction()
+            return date < before
     return _pred
 
 

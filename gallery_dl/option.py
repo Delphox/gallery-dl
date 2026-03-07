@@ -272,7 +272,7 @@ def build_parser():
         "--restrict-filenames",
         dest="path-restrict", metavar="VALUE", action=ConfigAction,
         help=("Replace restricted filename characters with underscores. "
-              "One of 'windows', 'unix', 'ascii', 'ascii+', "
+              "One of 'windows', 'windows+', 'unix', 'ascii', 'ascii+', "
               "or a custom set of characters"),
     )
     general.add_argument(
@@ -285,12 +285,6 @@ def build_parser():
         "-X", "--extractors",
         dest="extractor_sources", metavar="PATH", action="append",
         help="Load external extractors from PATH",
-    )
-    general.add_argument(
-        "--clear-cache",
-        dest="clear_cache", metavar="MODULE",
-        help="Delete cached login sessions, cookies, etc. for MODULE "
-             "(ALL to delete everything)",
     )
     general.add_argument(
         "--compat",
@@ -666,6 +660,33 @@ def build_parser():
         help="Open configuration file in external application",
     )
 
+    cache = parser.add_argument_group("Cache Options")
+    cache.add_argument(
+        "--cache-file",
+        dest="cache_file", metavar="PATH",
+        help="Use PATH as cache file",
+    )
+    cache.add_argument(
+        "--cache-show",
+        dest="cache_show", metavar="MODULE",
+        help="Show cached values for MODULE (ALL to show all entries, EXP to "
+             "show only expired entries, VAL to show only valid entries)",
+    )
+    cache.add_argument(
+        "--cache-clear",
+        dest="cache_clear", metavar="MODULE",
+        help="Delete cached login sessions, cookies, etc. for MODULE "
+             "(ALL to delete everything, EXP to delete only expired values)",
+    )
+    cache.add_argument(
+        "--cache-vacuum",
+        dest="cache_vacuum", action="store_const", const="vacuum",
+        help="Clean up the cache database by removing unused space and "
+             "reorganizing the data to improve performance",
+    )
+    cache.add_argument(
+        "--clear-cache", dest="cache_clear", help=SUPPRESS)
+
     authentication = parser.add_argument_group("Authentication Options")
     authentication.add_argument(
         "-u", "--username",
@@ -738,6 +759,46 @@ def build_parser():
         dest="archive", metavar="FILE", action=ConfigAction,
         help=("Record successfully downloaded files in FILE and "
               "skip downloading any file already in it"),
+    )
+    selection.add_argument(
+        "--date-before",
+        dest="date-before", metavar="DATE", action=ConfigAction,
+        help=("Process only posts created before this date given in "
+              "ISO 8601 format or as Unix timestamp (e.g. '2025-10-31', "
+              "'2026-01-09T15:30:00', '1767972600')")
+    )
+    selection.add_argument(
+        "--date-after",
+        dest="date-after", metavar="DATE", action=ConfigAction,
+        help=("Process only posts created after this date. "
+              "Stop extraction when an older post is encountered")
+    )
+    selection.add_argument(
+        "--blacklist",
+        dest="blacklist", metavar="CATEGORIES", action=ConfigAction,
+        help=("Ignore the given comma-separated category names or "
+              "category:subcategory pairs when spawning child extractors for "
+              "external URLs (e.g. 'pixiv', 'pixiv:user,*:artist')"),
+    )
+    selection.add_argument(
+        "--whitelist",
+        dest="whitelist", metavar="CATEGORIES", action=ConfigAction,
+        help=("Allow only the given comma-separated category names or "
+              "category:subcategory pairs to allow when spawning child "
+              "extractors for external URLs"),
+    )
+    selection.add_argument(
+        "--tags-blacklist",
+        dest="tags-blacklist", metavar="TAGS", action=ConfigAction,
+        help=("Ignore posts tagged with any of the tags given as comma-"
+              "separated list or path to a file containing them (e.g. "
+              r"'1girl', 'shirt,highres,smile', 'C:\path\to\list.txt')"),
+    )
+    selection.add_argument(
+        "--tags-whitelist",
+        dest="tags-whitelist", metavar="TAGS", action=ConfigAction,
+        help=("Allow only posts tagged with at least one of the tags given as "
+              "comma-separated list or path to a file containing them"),
     )
     selection.add_argument(
         "--range",

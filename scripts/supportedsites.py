@@ -66,6 +66,7 @@ CATEGORY_MAP = {
     "fappic"         : "Fappic.com",
     "fashionnova"    : "Fashion Nova",
     "fikfap"         : "FikFap",
+    "filester"       : "filester.me",
     "fitnakedgirls"  : "FitNakedGirls",
     "furaffinity"    : "Fur Affinity",
     "furry34"        : "Furry 34 com",
@@ -137,6 +138,7 @@ CATEGORY_MAP = {
     "mastodon.social": "mastodon.social",
     "mediawiki"      : "MediaWiki",
     "micmicidol"     : "MIC MIC IDOL",
+    "mixdrop"        : "MixDrop",
     "myhentaigallery": "My Hentai Gallery",
     "myportfolio"    : "Adobe Portfolio",
     "natomanga"      : "MangaNato",
@@ -448,8 +450,8 @@ SUBCATEGORY_MAP = {
     "twitter": {
         "media": "Media Timelines",
         "tweets": "",
-        "replies": "",
         "community": "",
+        "with-replies": "",
         "list-members": "List Members",
     },
     "vk": {

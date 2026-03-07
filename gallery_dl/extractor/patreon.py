@@ -22,7 +22,7 @@ class PatreonExtractor(Extractor):
     directory_fmt = ("{category}", "{creator[full_name]}")
     filename_fmt = "{id}_{title}_{num:>02}.{extension}"
     archive_fmt = "{id}_{num}"
-    useragent = "Patreon/72.2.28 (Android; Android 14; Scale/2.10)"
+    useragent = "Patreon/126.9.0.15 (Android; Android 14; Scale/2.10)"
     _warning = True
 
     def _init(self):
@@ -32,7 +32,7 @@ class PatreonExtractor(Extractor):
                 self.log.warning("no 'session_id' cookie set")
             if self.session.headers["User-Agent"] is self.useragent:
                 self.session.headers["User-Agent"] = \
-                    "Patreon/7.6.28 (Android; Android 11; Scale/2.10)"
+                    "Patreon/14.2.1 (Android; Android 11; Scale/2.10)"
 
         if format_images := self.config("format-images"):
             self._images_fmt = format_images
@@ -455,6 +455,11 @@ class PatreonUserExtractor(PatreonExtractor):
     subcategory = "user"
     pattern = r"(?:https?://)?(?:www\.)?patreon\.com/home$"
     example = "https://www.patreon.com/home"
+
+    def skip_date(self, date):
+        self._cursor = cursor = dt.from_ts(date).isoformat()
+        self._init_cursor = lambda: cursor
+        return True
 
     def posts(self):
         if date_max := self._get_date_min_max(None, None)[1]:

@@ -52,6 +52,13 @@ class E621Extractor(danbooru.DanbooruExtractor):
             post["extension"] = file["ext"]
             post["date"] = self.parse_datetime_iso(post["created_at"])
 
+            tags = []
+            for category, tags_cat in post["tags"].items():
+                post["tags_" + category] = tags_cat
+                tags.extend(tags_cat)
+            tags.sort()
+            post["tags"] = tags
+
             post.update(data)
             yield Message.Directory, "", post
             yield Message.Url, file["url"], post
@@ -123,11 +130,12 @@ class E621PoolExtractor(E621Extractor, danbooru.DanbooruPoolExtractor):
 
 class E621PostExtractor(E621Extractor, danbooru.DanbooruPostExtractor):
     """Extractor for single e621 posts"""
-    pattern = BASE_PATTERN + r"/post(?:s|/show)/(\d+)"
+    pattern = BASE_PATTERN + r"/p(?:ost(?:s|/show)/(\d+)|/(\w+))"
     example = "https://e621.net/posts/12345"
 
     def posts(self):
-        url = f"{self.root}/posts/{self.groups[-1]}.json"
+        pid = self.groups[-2] or int(self.groups[-1], 32)
+        url = f"{self.root}/posts/{pid}.json"
         return (self.request_json(url)["post"],)
 
 

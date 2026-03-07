@@ -349,6 +349,12 @@ Consider all listed sites to potentially be NSFW.
     <td>Hashtags, Posts, User Profiles</td>
     <td></td>
 </tr>
+<tr id="filester" title="filester">
+    <td>filester.me</td>
+    <td>https://filester.me/</td>
+    <td>Files, Folders</td>
+    <td></td>
+</tr>
 <tr id="fitnakedgirls" title="fitnakedgirls">
     <td>FitNakedGirls</td>
     <td>https://fitnakedgirls.com/</td>
@@ -721,6 +727,12 @@ Consider all listed sites to potentially be NSFW.
     <td>Albums, Channels</td>
     <td>Supported</td>
 </tr>
+<tr id="mixdrop" title="mixdrop">
+    <td>MixDrop</td>
+    <td>https://mixdrop.ag/</td>
+    <td>Files</td>
+    <td></td>
+</tr>
 <tr id="motherless" title="motherless">
     <td>Motherless</td>
     <td>https://motherless.com/</td>
@@ -874,7 +886,7 @@ Consider all listed sites to potentially be NSFW.
 <tr id="fanbox" title="fanbox">
     <td>pixivFANBOX</td>
     <td>https://www.fanbox.cc/</td>
-    <td>Creators, Home Feed, Posts, Pixiv Redirects, Supported User Feed</td>
+    <td>Creators, Home Feed, Posts, Pixiv Redirects, Supported User Feed, Tag Searches</td>
     <td><a href="https://github.com/mikf/gallery-dl#cookies">Cookies</a></td>
 </tr>
 <tr id="pixnet" title="pixnet">
@@ -934,7 +946,7 @@ Consider all listed sites to potentially be NSFW.
 <tr id="readcomiconline" title="readcomiconline">
     <td>Read Comic Online</td>
     <td>https://readcomiconline.li/</td>
-    <td>Comic Issues, Comics</td>
+    <td>Comic Issues, Comics, Tag Searches</td>
     <td></td>
 </tr>
 <tr id="realbooru" title="realbooru">
@@ -1018,7 +1030,7 @@ Consider all listed sites to potentially be NSFW.
 <tr id="simplyhentai" title="simplyhentai">
     <td>Simply Hentai</td>
     <td>https://www.simply-hentai.com/</td>
-    <td>Galleries, individual Images, Videos</td>
+    <td>Galleries, Languages, Manga, Series, Tag Searches</td>
     <td></td>
 </tr>
 <tr id="sizebooru" title="sizebooru">

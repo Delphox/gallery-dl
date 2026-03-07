@@ -11,6 +11,8 @@
 from .common import Extractor, Message
 from .. import text, util
 
+BASE_PATTERN = r"(?:https?://)?(?:www\.)?(?:\w+\.)?reddit\.com"
+
 
 class RedditExtractor(Extractor):
     """Base class for reddit extractors"""
@@ -274,7 +276,7 @@ class RedditExtractor(Extractor):
 class RedditSubredditExtractor(RedditExtractor):
     """Extractor for URLs from subreddits on reddit.com"""
     subcategory = "subreddit"
-    pattern = (r"(?:https?://)?(?:\w+\.)?reddit\.com"
+    pattern = (BASE_PATTERN +
                r"(/r/[^/?#]+(?:/([a-z]+))?)/?(?:\?([^#]*))?(?:$|#)")
     example = "https://www.reddit.com/r/SUBREDDIT/"
 
@@ -294,8 +296,7 @@ class RedditSubredditExtractor(RedditExtractor):
 class RedditHomeExtractor(RedditSubredditExtractor):
     """Extractor for submissions from your home feed on reddit.com"""
     subcategory = "home"
-    pattern = (r"(?:https?://)?(?:\w+\.)?reddit\.com"
-               r"((?:/([a-z]+))?)/?(?:\?([^#]*))?(?:$|#)")
+    pattern = BASE_PATTERN + r"((?:/([a-z]+))?)/?(?:\?([^#]*))?(?:$|#)"
     example = "https://www.reddit.com/"
 
 
@@ -303,8 +304,8 @@ class RedditUserExtractor(RedditExtractor):
     """Extractor for URLs from posts by a reddit user"""
     subcategory = "user"
     directory_fmt = ("{category}", "Users", "{user[name]}")
-    pattern = (r"(?:https?://)?(?:\w+\.)?reddit\.com/u(?:ser)?/"
-               r"([^/?#]+)(/[a-z]+)?/?(?:\?([^#]*))?$")
+    pattern = (BASE_PATTERN +
+               r"/u(?:ser)?/([^/?#]+)(/[a-z]+)?/?(?:\?([^#]*))?$")
     example = "https://www.reddit.com/user/USER/"
 
     def __init__(self, match):
@@ -325,7 +326,12 @@ class RedditUserExtractor(RedditExtractor):
         return submissions
 
     def _only(self, submissions, user):
-        uid = "t2_" + user["id"]
+        try:
+            uid = "t2_" + user["id"]
+        except Exception:
+            if user.get("is_suspended"):
+                raise self.exc.NotFoundError("Suspended User", False)
+            raise self.exc.NotFoundError("user")
         for submission, comments in submissions:
             if submission and submission.get("author_fullname") != uid:
                 submission["_media"] = False
@@ -342,7 +348,7 @@ class RedditSubmissionExtractor(RedditExtractor):
     """Extractor for URLs from a submission on reddit.com"""
     subcategory = "submission"
     pattern = (r"(?:https?://)?(?:"
-               r"(?:\w+\.)?reddit\.com/(?:(?:(?:r|u|user)/[^/?#]+/)?"
+               r"(?:www\.)?(?:\w+\.)?reddit\.com/(?:(?:(?:r|u|user)/[^/?#]+/)?"
                r"comments|gallery)|redd\.it)/([a-z0-9]+)")
     example = "https://www.reddit.com/r/SUBREDDIT/comments/id/"
 
@@ -381,9 +387,7 @@ class RedditRedirectExtractor(Extractor):
     """Extractor for personalized share URLs produced by the mobile app"""
     category = "reddit"
     subcategory = "redirect"
-    pattern = (r"(?:https?://)?(?:"
-               r"(?:\w+\.)?reddit\.com/(?:(r|u|user)/([^/?#]+)))"
-               r"/s/([a-zA-Z0-9]{10})")
+    pattern = BASE_PATTERN + r"/(?:(r|u|user)/([^/?#]+))/s/([a-zA-Z0-9]{10})"
     example = "https://www.reddit.com/r/SUBREDDIT/s/abc456GHIJ"
 
     def items(self):
@@ -562,7 +566,7 @@ class RedditAPI():
                 if data["error"] == 403:
                     raise exc.AuthorizationError()
                 if data["error"] == 404:
-                    raise exc.NotFoundError()
+                    raise exc.NotFoundError(self.extractor.subcategory)
                 self.log.debug(data)
                 raise exc.AbortExtraction(data.get("message"))
             return data

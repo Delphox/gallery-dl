@@ -54,7 +54,7 @@ class Extractor():
     request_interval_min = 0.0
     request_interval_429 = 60.0
     request_timestamp = 0.0
-    finalize = skip_files = skip_posts = skip_children = None
+    finalize = skip_files = skip_posts = skip_children = skip_date = None
     exc = exception
 
     def __init__(self, match):
@@ -815,16 +815,17 @@ class Extractor():
         def get(key, default):
             ts = self.config(key, default)
             if isinstance(ts, str):
-                dt_obj = dt.parse_iso(ts) if fmt is None else dt.parse(ts, fmt)
+                dt_obj = dt.parse_iso(ts)
                 if dt_obj is dt.NONE:
-                    self.log.warning(
-                        "Unable to parse '%s': Invalid %s string '%s'",
-                        key, "isoformat" if fmt is None else "date", ts)
+                    self.log.warning("Unable to parse '%s': Invalid ISO 8601 "
+                                     "date/time value '%s'", key, ts)
                     ts = default
                 else:
                     ts = int(dt.to_ts(dt_obj))
             return ts
-        fmt = self.config("date-format")
+        if self.config("date-format"):
+            self.log.error("'date-format' is no longer supported. "
+                           "Use ISO 8601 date/time values instead.")
         return get("date-min", dmin), get("date-max", dmax)
 
     def _dump_response(self, response, history=True):
@@ -1023,18 +1024,16 @@ class Dispatch():
             for data in extractor_data
         }
 
-        if alt is not None:
-            for sub, sub_alt, url in alt:
-                if url is None:
-                    extractors[sub_alt] = extractors[sub]
-                else:
-                    extractors[sub_alt] = (extractors[sub][0], url)
-
         include = self.config("include", default) or ()
         if include == "all":
             include = extractors
-        elif isinstance(include, str):
-            include = include.replace(" ", "").split(",")
+        else:
+            if isinstance(include, str):
+                include = include.replace(" ", "").split(",")
+            if alt is not None:
+                for sub, sub_alt, url in alt:
+                    extractors[sub_alt] = (extractors[sub] if url is None else
+                                           (extractors[sub][0], url))
 
         results = []
         for category in include:
