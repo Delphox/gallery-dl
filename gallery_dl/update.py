@@ -14,7 +14,7 @@ from .job import DownloadJob
 from . import util, version, output, exception
 
 REPOS = {
-    "stable" : "mikf/gallery-dl",
+    "stable" : "Delphox/gallery-dl",
     "dev"    : "Delphox/gallery-dl",
     "nightly": "Delphox/gallery-dl",
     "master" : "Delphox/gallery-dl",
@@ -34,7 +34,7 @@ BINARIES_DEV = {
     "macos"      : "gallery-dl_macos",
 }
 BINARIES = {
-    "stable" : BINARIES_STABLE,
+    "stable" : BINARIES_DEV,
     "dev"    : BINARIES_DEV,
     "nightly": BINARIES_DEV,
     "master" : BINARIES_DEV,
