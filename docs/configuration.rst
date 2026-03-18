@@ -21,6 +21,8 @@ Contents
 5) `Postprocessor Options`_
 6) `Miscellaneous Options`_
 7) `API Tokens & IDs`_
+8) `Custom Types`_
+
 
 
 Extractor Options
@@ -2864,13 +2866,19 @@ Type
     * ``bool``
     * ``string``
 Default
-    ``true``
+    ``false``
 Description
     Download original files if available.
 
     Setting this option to ``"images"`` only downloads original
     files if they are images and falls back to preview versions for
     everything else (archives, videos, etc.).
+Note
+    https://www.deviantart.com/team/status-update/An-adjustments-being-made-to-1307747979 ::
+
+    > The New Weekly Limits:
+    >   Non-Core & Core Basic:  10 downloads per week
+    >   Core+ and higher     : 150 downloads per week
 
 
 extractor.deviantart.pagination
@@ -3491,6 +3499,63 @@ Description
     * If this is a ``string``, it should be one of Flickr's format specifiers
       (``"Original"``, ``"Large"``, ... or ``"o"``, ``"k"``, ``"h"``,
       ``"l"``, ...) to use as an upper limit.
+
+
+extractor.foriio.audio
+----------------------
+Type
+    ``bool``
+Default
+    ``true``
+Description
+    Download embedded audio files using |ytdl|
+    in ``sound`` works
+
+
+extractor.foriio.external
+-------------------------
+Type
+    ``bool``
+Default
+    ``true``
+Description
+    Follow external URLs
+    in ``web_article`` works
+
+
+extractor.foriio.user.posts
+---------------------------
+Type
+    * ``string``
+    * ``list`` of ``strings``
+Default
+    ``null``
+Example
+    * ``"image,video,sound"``
+    * ``["web_article", "copy_writing"]``
+Description
+    Only process works of the given types.
+
+
+extractor.foriio.previews
+-------------------------
+Type
+    ``bool``
+Default
+    ``false``
+Description
+    Download preview images of embedded media.
+
+
+extractor.foriio.videos
+-----------------------
+Type
+    ``bool``
+Default
+    ``true``
+Description
+    Download embedded (YouTube) videos using |ytdl|
+    in ``video`` works
 
 
 extractor.furaffinity.descriptions
@@ -4143,6 +4208,53 @@ Supported Values
     * ``user-playlists``
 Note
     It is possible to use ``"all"`` instead of listing all values separately.
+
+
+extractor.joyreactor.embeds
+---------------------------
+Type
+    ``bool``
+Default
+    ``false``
+Description
+    Downlload embedded external videos with |ytdl|.
+
+
+extractor.joyreactor.formats
+----------------------------
+Type
+    * ``string``
+    * ``list`` of ``strings``
+Default
+    ``["webm"]``
+Example
+    ``"gif,mp4,webm"``
+Description
+    A (comma-separated) list of video formats to download.
+Supported Values
+    * ``webm``
+    * ``mp4``
+    * ``gif``
+
+
+extractor.joyreactor.metadata
+-----------------------------
+Type
+    ``bool``
+Default
+    ``false``
+Description
+    Extract additional metadata.
+
+
+extractor.joyreactor.videos
+---------------------------
+Type
+    ``bool``
+Default
+    ``true``
+Description
+    Download videos.
 
 
 extractor.kemono.archives
@@ -6818,6 +6930,16 @@ Description
     Fetch media from pinned Tweets.
 
 
+extractor.twitter.previews
+--------------------------
+Type
+    ``bool``
+Default
+    ``false``
+Description
+    Download video previews.
+
+
 extractor.twitter.quoted
 ------------------------
 Type
@@ -7535,6 +7657,16 @@ Description
         Descending order (newest first)
     ``"reaction"`` | ``"score"``
         Reaction Score order (``threads`` only)
+
+
+extractor.[xenforo].quoted
+--------------------------
+Type
+    ``bool``
+Default
+    ``false``
+Description
+    Extract files from quoted content.
 
 
 extractor.ytdl.cmdline-args
@@ -8744,6 +8876,16 @@ Description
     The event(s) for which `exec.command`_ is run.
 
     See `metadata.event`_ for a list of available events.
+
+
+exec.output
+-----------
+Type
+    ``boolean``
+Default
+    ``true``
+Description
+    Show output of spawned subprocesses.
 
 
 exec.session
@@ -10504,6 +10646,7 @@ Example
     * ``"print Hello World"``
     * ``"raise AbortExtraction an error occured"``
     * ``"flag file = terminate"``
+    * ``"keyword title Hello World"``
     * ``["print Exiting", "exit 1"]``
 Description
     An Action_ is parsed as `Action Type`
@@ -10552,6 +10695,8 @@ Description
         | Expected syntax is ``<flag>[ = <value>]`` (e.g. ``post = stop``)
         | ``<flag>`` can be one of ``file``, ``post``, ``child``, ``download``
         | ``<value>`` can be one of ``stop``, ``abort``, ``terminate``, ``restart``, ``skip`` (default ``stop``)
+    ``keyword``:
+        Set a `keyword <extractor.*.keywords_>`__ value
     ``wait``:
         | Sleep for a given Duration_ or
         | wait until Enter is pressed when no argument was given.

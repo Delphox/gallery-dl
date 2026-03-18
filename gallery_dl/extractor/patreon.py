@@ -26,13 +26,13 @@ class PatreonExtractor(Extractor):
     _warning = True
 
     def _init(self):
-        if not self.cookies_check(("session_id",), subdomains=True):
+        if self.cookies_check(("session_id",), subdomains=True):
+            self._logged_in = True
+        else:
+            self._logged_in = False
             if self._warning:
                 PatreonExtractor._warning = False
                 self.log.warning("no 'session_id' cookie set")
-            if self.session.headers["User-Agent"] is self.useragent:
-                self.session.headers["User-Agent"] = \
-                    "Patreon/14.2.1 (Android; Android 11; Scale/2.10)"
 
         if format_images := self.config("format-images"):
             self._images_fmt = format_images
@@ -197,6 +197,16 @@ class PatreonExtractor(Extractor):
             self.cache(self._user, user["links"]["related"]) or
             included["user"][user["data"]["id"]])
 
+        if not attr.get("content") and (
+                cjs := attr.pop("content_json_string", None)):
+            try:
+                attr["content"] = self.utils("tiptap").to_html(cjs)
+            except Exception as exc:
+                self.log.traceback(exc)
+                self.log.warning(
+                    "%s: Failed to parse content_json_string (%s: %s)",
+                    attr["id"], exc.__class__.__name__, exc)
+
         return attr
 
     def _transform(self, included):
@@ -268,13 +278,14 @@ class PatreonExtractor(Extractor):
             "is_nsfw,is_monthly,name,url"
 
             "&fields[post]=change_visibility_at,comment_count,commenter_count,"
-            "content,current_user_can_comment,current_user_can_delete,"
-            "current_user_can_view,current_user_has_liked,embed,image,"
-            "insights_last_updated_at,is_paid,like_count,meta_image_url,"
-            "min_cents_pledged_to_view,post_file,post_metadata,published_at,"
-            "patreon_url,post_type,pledge_url,preview_asset_type,thumbnail,"
-            "thumbnail_url,teaser_text,title,upgrade_url,url,"
-            "was_posted_by_campaign_owner,has_ti_violation,moderation_status,"
+            "content,content_json_string,current_user_can_comment,"
+            "current_user_can_delete,current_user_can_view,"
+            "current_user_has_liked,embed,image,insights_last_updated_at,"
+            "is_paid,like_count,meta_image_url,min_cents_pledged_to_view,"
+            "post_file,post_metadata,published_at,patreon_url,post_type,"
+            "pledge_url,preview_asset_type,thumbnail,thumbnail_url,"
+            "teaser_text,title,upgrade_url,url,was_posted_by_campaign_owner,"
+            "has_ti_violation,moderation_status,"
             "post_level_suspension_removal_date,pls_one_liners_by_category,"
             "video_preview,view_count"
 
@@ -480,8 +491,16 @@ class PatreonPostExtractor(PatreonExtractor):
     example = "https://www.patreon.com/posts/TITLE-12345"
 
     def posts(self):
+        if not self._logged_in and \
+                self.session.headers["User-Agent"] is self.useragent:
+            # enable `.m3u8` manifest downloads
+            headers = {"User-Agent":
+                       "Patreon/14.2.1 (Android; Android 11; Scale/2.10)"}
+        else:
+            headers = None
+
         url = f"{self.root}/posts/{self.groups[0]}"
-        page = self.request(url, notfound=True).text
+        page = self.request(url, headers=headers, notfound=True).text
         bootstrap = self._extract_bootstrap(page)
 
         try:

@@ -28,6 +28,7 @@ CATEGORY_MAP = {
     "ahottie"        : "AHottie",
     "aibooru"        : "AIBooru",
     "allgirlbooru"   : "All girl",
+    "allporncomic"   : "AllPornComic",
     "ao3"            : "Archive of Our Own",
     "archivedmoe"    : "Archived.Moe",
     "archiveofsins"  : "Archive of Sins",
@@ -41,6 +42,7 @@ CATEGORY_MAP = {
     "baraag"         : "baraag",
     "batoto"         : "BATO.TO",
     "bbc"            : "BBC",
+    "blacktowhite"   : "BlacktoWhite",
     "booth"          : "BOOTH",
     "celebforum"     : "celebforum",
     "cfake"          : "Celebrity Fakes",
@@ -68,6 +70,7 @@ CATEGORY_MAP = {
     "fikfap"         : "FikFap",
     "filester"       : "filester.me",
     "fitnakedgirls"  : "FitNakedGirls",
+    "foriio"         : "foriio",
     "furaffinity"    : "Fur Affinity",
     "furry34"        : "Furry 34 com",
     "girlswithmuscle": "Girls with Muscle",
@@ -176,6 +179,7 @@ CATEGORY_MAP = {
     "rule34hentai"   : "Rule34Hentai",
     "rule34us"       : "Rule 34",
     "rule34vault"    : "R34 Vault",
+    "rule34world"    : "Rule 34 World",
     "rule34xyz"      : "Rule 34 XYZ",
     "sankaku"        : "Sankaku Channel",
     "sankakucomplex" : "Sankaku Complex",
@@ -324,6 +328,9 @@ SUBCATEGORY_MAP = {
     "fanbox": {
         "supporting": "Supported User Feed",
         "redirect"  : "Pixiv Redirects",
+    },
+    "fantia": {
+        "supporting": "Supported Creators",
     },
     "fansly": {
         "lists": "Account Lists",
@@ -572,6 +579,7 @@ AUTH_MAP = {
     "poipiku"        : _COOKIES,
     "ponybooru"      : "API Key",
     "reddit"         : _OAUTH,
+    "rule34world"    : "Supported",
     "rule34xyz"      : "Supported",
     "sankaku"        : "Supported",
     "scrolller"      : "Supported",
@@ -720,6 +728,10 @@ def build_extractor_list():
     # add wikifeetx.com
     default["wikifeetx"] = default["wikifeet"]
     domains["wikifeetx"] = "https://www.wikifeetx.com/"
+
+    # add rule34.world
+    default["rule34world"] = default["rule34xyz"]
+    domains["rule34world"] = "https://rule34.world/"
 
     # imgdrive / imgtaxi / imgwallet
     base = categories["imagehost"]
