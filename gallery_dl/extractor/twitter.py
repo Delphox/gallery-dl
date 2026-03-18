@@ -14,7 +14,8 @@ import itertools
 import random
 
 BASE_PATTERN = (r"(?:https?://)?(?:www\.|mobile\.)?"
-                r"(?:(?:[fv]x)?twitter|(?:fix(?:up|v))?(?:g(?:irlc)?ock|stupidpenis|skibidi)?x(?:cancel)?)\.com")
+                r"(?:(?:[fv]x)?twitter|(?:fix(?:up|v))?"
+                r"(?:g(?:irlc)?ock|stupidpenis|skibidi|yiff)?x(?:cancel)?)\.com")
 USER_PATTERN = BASE_PATTERN + r"/([^/?#]+)"
 
 
