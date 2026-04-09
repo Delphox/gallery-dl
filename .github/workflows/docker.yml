@@ -29,7 +29,13 @@ jobs:
       }}
 
     steps:
+<<<<<<< HEAD
     - uses: actions/checkout@v5
+=======
+    - name: Clone repo
+      run: |
+        git clone --depth 1 --no-tags https://codeberg.org/mikf/gallery-dl.git .
+>>>>>>> 9f3d2b3fc ([workflows] git clone from remote repository)
 
     - uses: docker/metadata-action@v5
       id: metadata

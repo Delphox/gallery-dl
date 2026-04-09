@@ -2,12 +2,6 @@ name: Tests
 
 on:
   workflow_dispatch:
-  push:
-    branches:
-    - master
-  pull_request:
-    branches:
-    - master
 
 jobs:
   test:
@@ -28,7 +22,9 @@ jobs:
         - "pypy3.11"
 
     steps:
-    - uses: actions/checkout@v5
+    - name: Clone repo
+      run: |
+        git clone --depth 1 --no-tags https://codeberg.org/Snivy/gallery-dl.git .
 
     - name: Check file permissions
       run: |

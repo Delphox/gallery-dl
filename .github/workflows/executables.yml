@@ -2,11 +2,6 @@ name: Executables
 
 on:
   workflow_dispatch:
-  push:
-    branches:
-    - master
-    tags-ignore:
-    - "*"
 
 env:
   DATE_FORMAT: "%Y.%m.%d"
@@ -14,10 +9,14 @@ env:
 jobs:
   build:
 
+
     runs-on: ${{ matrix.os }}
     defaults:
       run:
         shell: bash
+    outputs:
+      COMMIT: ${{ steps.commit.outputs.COMMIT }}
+
     strategy:
       fail-fast: false
       matrix:
@@ -28,7 +27,7 @@ jobs:
         include:
         - os: "ubuntu-latest"
           architecture: "x64"
-          python-version: "3.13"
+          python-version: "3.14"
           python-packages: "secretstorage"
         - os: "windows-2022"
           architecture: "x86"
@@ -36,13 +35,20 @@ jobs:
           python-packages: "toml"
 
     steps:
-    - uses: actions/checkout@v5
+    - name: Clone repo
+      run: |
+        git clone --depth 1 --no-tags https://codeberg.org/Snivy/gallery-dl.git .
 
     - name: Set up Python ${{ matrix.python-version }} ${{ matrix.architecture }}
       uses: actions/setup-python@v6
       with:
         python-version: ${{ matrix.python-version }}
         architecture: ${{ matrix.architecture }}
+
+    - name: Commit Hash
+      id: commit
+      run: |
+        echo "COMMIT=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
 
     - name: Environment Variables
       run: |
@@ -74,7 +80,7 @@ jobs:
         pip install truststore || true
         python ./scripts/pyinstaller.py --label '${{ env.LABEL }}'
 
-    - uses: actions/upload-artifact@v4
+    - uses: actions/upload-artifact@v7
       with:
         name: executable-${{ matrix.os }}-${{ matrix.architecture }}-${{ matrix.python-version }}
         path: dist/*
@@ -87,13 +93,15 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/download-artifact@v4
+    - uses: actions/download-artifact@v8
 
     - name: Environment Variables
       run: echo "DATE=$(date '+${{ env.DATE_FORMAT }}')" >> "$GITHUB_ENV"
 
     - name: Body
-      run: printf 'https://github.com/%s/commit/%s' '${{ github.repository }}' '${{ github.sha }}' > body.md
+      run: |
+        COMMIT="${{ needs.build.outputs.COMMIT }}"
+        printf '[`%s`](https://codeberg.org/mikf/gallery-dl/commit/%s)' "${COMMIT::8}" "$COMMIT" > body.md
 
     - uses: ncipollo/release-action@v1
       with:
