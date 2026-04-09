@@ -101,7 +101,7 @@ jobs:
     - name: Body
       run: |
         COMMIT="${{ needs.build.outputs.COMMIT }}"
-        printf '[`%s`](https://codeberg.org/mikf/gallery-dl/commit/%s)' "${COMMIT::8}" "$COMMIT" > body.md
+        printf '[`%s`](https://codeberg.org/Snivy/gallery-dl/commit/%s)' "${COMMIT::8}" "$COMMIT" > body.md
 
     - uses: ncipollo/release-action@v1
       with:
