@@ -20,7 +20,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: ["windows-latest", "macOS-latest"]
+        os: ["windows-latest"]
         architecture: ["x64"]
         python-version: ["3.14"]
         python-packages: [""]
